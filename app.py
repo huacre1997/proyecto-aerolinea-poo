@@ -173,6 +173,31 @@ def main():
     # Crear la lista de objetos de Vuelos programados
     flights: List[ScheduledFlight] = create_list_flights(routes)
 
+    total_tickets: int = 0
+
+    total_sold_economy_ticket: float = 0
+
+    total_sold_premium_ticket: float = 0
+
+    total_generate_igv: float = 0
+
+    for i in flights:
+        total_tickets += len(i.premium_sold_tickets) + len(i.economic_sold_tickets)
+
+        total_sold_economy_ticket += sum(i.generate_igv_economic_tickets())
+
+        total_sold_premium_ticket += sum(i.generate_igv_premium_tickets())
+
+        total_generate_igv += sum(i.convert_economic_tickets_igv()) + sum(i.convert_premium_tickets_igv())
+
+
+    print(f"Total de tickets vendidos: {total_tickets}")
+
+    print(f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_economy_ticket)} en tickets económicos")
+
+    print(f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_premium_ticket)} en tickets premiums")
+
+    print(f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_generate_igv)} en IGV")
 
 if __name__ == "__main__":
     main()
