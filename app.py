@@ -110,7 +110,7 @@ def create_list_routes() -> List[Route]:
 
 def create_list_flights(routes: List) -> List[ScheduledFlight]:
     """
-    Función que crea y devuelve una lista de objetos Product
+    Función que crea y devuelve una lista de objetos ScheduledFlight
     """
 
     data_flights: List[Dict[str, str]] = [
@@ -181,23 +181,60 @@ def main():
 
     total_generate_igv: float = 0
 
+    total_economic_seats: int = 0
+
+    total_premium_seats: int = 0
+
     for i in flights:
-        total_tickets += len(i.premium_sold_tickets) + len(i.economic_sold_tickets)
+        total_tickets += len(i.premium_sold_tickets) + \
+            len(i.economic_sold_tickets)
 
         total_sold_economy_ticket += sum(i.generate_igv_economic_tickets())
 
         total_sold_premium_ticket += sum(i.generate_igv_premium_tickets())
 
-        total_generate_igv += sum(i.convert_economic_tickets_igv()) + sum(i.convert_premium_tickets_igv())
+        total_generate_igv += sum(i.convert_economic_tickets_igv()) + \
+            sum(i.convert_premium_tickets_igv())
 
+        total_premium_seats += len(i.premium_sold_tickets)
+
+        total_economic_seats += len(i.economic_sold_tickets)
+
+    order_total_tickets_sold: List[ScheduledFlight] = sorted(
+        flights, key=lambda x: len(x.economic_sold_tickets) + len(x.premium_sold_tickets))
+
+    total_avg_premium_ticket: float = round(
+        total_sold_premium_ticket / total_premium_seats, 2)
+
+    total_avg_economic_ticket: float = round(
+        total_sold_economy_ticket / total_economic_seats, 2)
 
     print(f"Total de tickets vendidos: {total_tickets}")
+    print(f"-" * 60)
 
-    print(f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_economy_ticket)} en tickets económicos")
+    print(
+        f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_economy_ticket)} en tickets económicos")
+    print(f"-" * 60)
 
-    print(f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_premium_ticket)} en tickets premiums")
+    print(
+        f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_premium_ticket)} en tickets premiums")
+    print(f"-" * 60)
 
-    print(f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_generate_igv)} en IGV")
+    print(
+        f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_generate_igv)} en IGV")
+    print(f"-" * 60)
+
+    print(
+        f"Valor promedio de un pasaje económico :{utils.get_currency_format(CURRENCY_SYMBOL,total_avg_economic_ticket)}")
+    print(f"-" * 60)
+
+    print(
+        f"Valor promedio de un pasaje premium :{utils.get_currency_format(CURRENCY_SYMBOL,total_avg_premium_ticket)}")
+    print(f"-" * 60)
+
+    print(
+        f"El vuelo con la mayor cantidad de pasajeros es: {order_total_tickets_sold[-1].route.name}")
+    print(f"-" * 60)
 
 if __name__ == "__main__":
     main()
