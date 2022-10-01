@@ -232,6 +232,10 @@ def main():
     total_avg_economic_ticket: float = round(
         total_sold_economy_ticket / total_economic_seats, 2)
 
+    # Fore.BLUE --- Pinta el contenido de color azul
+    # Fore.GREEN --- Pinta el contenido de color verde
+    # Style.RESET_ALL --- Detiene el pintado 
+    
     # Mostramos en pantalla valores calculados.
     print(f"-" * 60)
     print(
