@@ -3,7 +3,9 @@ from model.ScheduledFlight import ScheduledFlight
 from typing import List, Dict
 from config import CURRENCY_SYMBOL
 import utils
+import time
 # link typing: https://docs.python.org/3/library/typing.html?highlight=typing#module-typing
+# link time: https://docs.python.org/3/library/time.html
 
 
 def create_list_routes() -> List[Route]:
@@ -156,9 +158,9 @@ def create_list_flights(routes: List) -> List[ScheduledFlight]:
         # Buscamos nuestro objeto Ruta con el código de ruta del vuelo(flight)
         route = [r for r in routes if r.code == flight['code']]
         # Creamos nuestro objeto ScheduledFlight asignando la ruta encontrada [0] y el codigo del avión
-        obj_product = ScheduledFlight(route[0], flight['airplane'])
+        obj_flight = ScheduledFlight(route[0], flight['airplane'])
         # Agregamos el objeto ScheduledFlight en una lista
-        flights.append(obj_product)
+        flights.append(obj_flight)
 
     return flights
 
@@ -173,68 +175,97 @@ def main():
     # Crear la lista de objetos de Vuelos programados
     flights: List[ScheduledFlight] = create_list_flights(routes)
 
+    # declarar e inicializar la variable que almacenará el total de pasjaes vendidos.
     total_tickets: int = 0
 
+    # declarar e inicializar la variable que almacenará el importe total de pasajes económicos vendidos.
     total_sold_economy_ticket: float = 0
 
+    # declarar e inicializar la variable que almacenará el importe total de pasajes premium vendidos.
     total_sold_premium_ticket: float = 0
 
+    # declarar e inicializar la variable que almacenará el importe total de IGV.
     total_generate_igv: float = 0
 
+    # declarar e inicializar la variable que almacenará el total de pasajes económicos vendidos.
     total_economic_seats: int = 0
 
+    # declarar e inicializar la variable que almacenará el total de pasajes premium vendidos.
     total_premium_seats: int = 0
 
     for i in flights:
+        # Calcular la suma del total de pasajes vendidos
         total_tickets += len(i.premium_sold_tickets) + \
             len(i.economic_sold_tickets)
-
+        # Calcular la suma del importe total de pasajes económicos vendidos
         total_sold_economy_ticket += sum(i.generate_igv_economic_tickets())
 
+        # Calcular la suma del importe total de pasajes premium vendidos
         total_sold_premium_ticket += sum(i.generate_igv_premium_tickets())
 
+        # Calcular la suma total de importe total de IGV cobrado
         total_generate_igv += sum(i.convert_economic_tickets_igv()) + \
             sum(i.convert_premium_tickets_igv())
 
+        # Calcular la la cantidad de pasajes premium vendidos
         total_premium_seats += len(i.premium_sold_tickets)
 
+        # Calcular la la cantidad de pasajes económicos vendidos
         total_economic_seats += len(i.economic_sold_tickets)
 
+    # Ordenemos lista de vuelos  según el total de tickets vendidos(de menor a mayor)
     order_total_tickets_sold: List[ScheduledFlight] = sorted(
         flights, key=lambda x: len(x.economic_sold_tickets) + len(x.premium_sold_tickets))
 
+    # Ordenemos lista de vuelos según el importe total de ventas (de mayor a menor)
+    order_total_tickets_sales: List[ScheduledFlight] = sorted(
+        flights, key=lambda x: sum(x.generate_igv_economic_tickets()) + sum(x.generate_igv_premium_tickets()), reverse=True)
+
+    # Calculamos el valor promedio de un pasaje premium
     total_avg_premium_ticket: float = round(
         total_sold_premium_ticket / total_premium_seats, 2)
 
+    # Calculamos el valor promedio de un pasaje económico
     total_avg_economic_ticket: float = round(
         total_sold_economy_ticket / total_economic_seats, 2)
 
+    # Mostramos en pantalla valores calculados.
+    print(f"-" * 60)
     print(f"Total de tickets vendidos: {total_tickets}")
     print(f"-" * 60)
-
     print(
-        f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_economy_ticket)} en tickets económicos")
+        f"Se generó un total de {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_economy_ticket)} en tickets económicos")
     print(f"-" * 60)
-
     print(
-        f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_premium_ticket)} en tickets premiums")
+        f"Se generó un total de {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_premium_ticket)} en tickets premiums")
     print(f"-" * 60)
-
     print(
-        f"Se generó un total de  {utils.get_currency_format(CURRENCY_SYMBOL,total_generate_igv)} en IGV")
+        f"Se generó un total de {utils.get_currency_format(CURRENCY_SYMBOL,total_generate_igv)} en IGV")
     print(f"-" * 60)
-
     print(
-        f"Valor promedio de un pasaje económico :{utils.get_currency_format(CURRENCY_SYMBOL,total_avg_economic_ticket)}")
+        f"Valor promedio de un pasaje económico : {utils.get_currency_format(CURRENCY_SYMBOL,total_avg_economic_ticket)}")
     print(f"-" * 60)
-
     print(
-        f"Valor promedio de un pasaje premium :{utils.get_currency_format(CURRENCY_SYMBOL,total_avg_premium_ticket)}")
+        f"Valor promedio de un pasaje premium : {utils.get_currency_format(CURRENCY_SYMBOL,total_avg_premium_ticket)}")
     print(f"-" * 60)
-
     print(
         f"El vuelo con la mayor cantidad de pasajeros es: {order_total_tickets_sold[-1].route.name}")
     print(f"-" * 60)
+    print(
+        f"El vuelo con la menor cantidad de pasajeros es : {order_total_tickets_sold[0].route.name}")
+    print(f"-" * 60)
+    for i in range(3):
+        total = round(sum(order_total_tickets_sales[i].generate_igv_premium_tickets()) + sum(
+            order_total_tickets_sales[i].generate_igv_economic_tickets()), 2)
+        print(
+            f"El {i+1}° vuelo con mayor ingresos es {order_total_tickets_sales[i].route.name} con un total de {utils.get_currency_format(CURRENCY_SYMBOL,total)}")
+    print(f"-" * 60)
+    print(
+        f"El avión que transportó mas pasajeros es : {order_total_tickets_sold[-1].airplane}")
+    print(f"-" * 60)
+
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print(f"Tiempo exacto de ejecución : {time.time() - start_time} segundos ")

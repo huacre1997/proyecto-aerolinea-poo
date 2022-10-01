@@ -1,4 +1,4 @@
-from config import IGV_TOTAL, CURRENCY_SYMBOL
+from config import IGV_TOTAL
 from model.Route import Route
 from typing import List
 
@@ -42,7 +42,7 @@ class ScheduledFlight(object):
 
     def generate_igv_economic_tickets(self):
         """
-        Aplica el IGV a los valores de nuestra lista de tickets económicos
+        Adiciona a los valores de nuestra lista de tickets económicos el IGV del mismo
         """
         economic_tickets_igv = list(
             map(lambda x: round(x + IGV_TOTAL * x / 100, 2), self.economic_sold_tickets))
