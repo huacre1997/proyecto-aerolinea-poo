@@ -2,10 +2,13 @@ from model.Route import Route
 from model.ScheduledFlight import ScheduledFlight
 from typing import List, Dict
 from config import CURRENCY_SYMBOL
+from colorama import Style, Fore
 import utils
 import time
+
 # link typing: https://docs.python.org/3/library/typing.html?highlight=typing#module-typing
 # link time: https://docs.python.org/3/library/time.html
+# link colorama: https://pypi.org/project/colorama/
 
 
 def create_list_routes() -> List[Route]:
@@ -231,41 +234,43 @@ def main():
 
     # Mostramos en pantalla valores calculados.
     print(f"-" * 60)
-    print(f"Total de tickets vendidos: {total_tickets}")
+    print(
+        f"Total de tickets vendidos: {Fore.BLUE}{total_tickets}{Style.RESET_ALL}")
     print(f"-" * 60)
     print(
-        f"Se generó un total de {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_economy_ticket)} en tickets económicos")
+        f"Se generó un total de {Fore.GREEN}{utils.get_currency_format(CURRENCY_SYMBOL,total_sold_economy_ticket)}{Style.RESET_ALL} en tickets económicos")
     print(f"-" * 60)
     print(
-        f"Se generó un total de {utils.get_currency_format(CURRENCY_SYMBOL,total_sold_premium_ticket)} en tickets premiums")
+        f"Se generó un total de {Fore.GREEN}{utils.get_currency_format(CURRENCY_SYMBOL,total_sold_premium_ticket)}{Style.RESET_ALL} en tickets premiums")
     print(f"-" * 60)
     print(
-        f"Se generó un total de {utils.get_currency_format(CURRENCY_SYMBOL,total_generate_igv)} en IGV")
+        f"Se generó un total de {Fore.GREEN}{utils.get_currency_format(CURRENCY_SYMBOL,total_generate_igv)}{Style.RESET_ALL} en IGV")
     print(f"-" * 60)
     print(
-        f"Valor promedio de un pasaje económico : {utils.get_currency_format(CURRENCY_SYMBOL,total_avg_economic_ticket)}")
+        f"Valor promedio de un pasaje económico : {Fore.GREEN}{utils.get_currency_format(CURRENCY_SYMBOL,total_avg_economic_ticket)}{Style.RESET_ALL}")
     print(f"-" * 60)
     print(
-        f"Valor promedio de un pasaje premium : {utils.get_currency_format(CURRENCY_SYMBOL,total_avg_premium_ticket)}")
+        f"Valor promedio de un pasaje premium : {Fore.GREEN}{utils.get_currency_format(CURRENCY_SYMBOL,total_avg_premium_ticket)}{Style.RESET_ALL}")
     print(f"-" * 60)
     print(
-        f"El vuelo con la mayor cantidad de pasajeros es: {order_total_tickets_sold[-1].route.name}")
+        f"El vuelo con la mayor cantidad de pasajeros es: {Fore.BLUE}{order_total_tickets_sold[-1].route.name}{Style.RESET_ALL}")
     print(f"-" * 60)
     print(
-        f"El vuelo con la menor cantidad de pasajeros es : {order_total_tickets_sold[0].route.name}")
+        f"El vuelo con la menor cantidad de pasajeros es : {Fore.BLUE}{order_total_tickets_sold[0].route.name}{Style.RESET_ALL}")
     print(f"-" * 60)
     for i in range(3):
         total = round(sum(order_total_tickets_sales[i].generate_igv_premium_tickets()) + sum(
             order_total_tickets_sales[i].generate_igv_economic_tickets()), 2)
         print(
-            f"El {i+1}° vuelo con mayor ingresos es {order_total_tickets_sales[i].route.name} con un total de {utils.get_currency_format(CURRENCY_SYMBOL,total)}")
+            f"El {i+1}° vuelo con mayor ingresos es {order_total_tickets_sales[i].route.name} con un total de {Fore.GREEN}{utils.get_currency_format(CURRENCY_SYMBOL,total)}{Style.RESET_ALL}")
     print(f"-" * 60)
     print(
-        f"El avión que transportó mas pasajeros es : {order_total_tickets_sold[-1].airplane}")
+        f"El avión que transportó mas pasajeros es : {Fore.BLUE}{order_total_tickets_sold[-1].airplane}{Style.RESET_ALL}")
     print(f"-" * 60)
 
 
 if __name__ == "__main__":
+    # Inicializamos el tiempo de ejecución inicial
     start_time = time.time()
     main()
     print(f"Tiempo exacto de ejecución : {time.time() - start_time} segundos ")
